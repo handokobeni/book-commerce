@@ -15,4 +15,14 @@ class Order extends Model
     {
         return $this->belongsToMany(Book::class)->withPivot('quantity');;
     }
+
+    public function getTotalQuantityAttribute()
+    {
+        $total_quantity = 0;
+
+        foreach ($this->books as $book) {
+            $total_quantity += $book->pivot->quantity;
+        }
+        return $total_quantity;
+    }
 }
