@@ -12,9 +12,18 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with('user')->with('books')->paginate(10);
+        $status = $request->status;
+        $buyer_email = $request->buyer_email;
+        $orders = Order::with('user')
+            ->with('books')
+            ->whereHas('user', function ($query) use ($buyer_email) {
+                $query->where('email', 'LIKE', "%$buyer_email%");
+            })
+            ->where('status', 'LIKE', "%$status%")
+            ->paginate(10);
+
         return view('orders.index', ['orders' => $orders]);
     }
 
